@@ -1,13 +1,59 @@
-﻿@{
-    Layout = "_Layout";
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>
-        Learn about <a href="https://learn.microsoft.com/aspnet/core">
-            building Web apps with ASP.NET Core
-        </a>.
-    </p>
-</div>
+<section class="hero p-5 mb-4 rounded-3 shadow-sm bg-white">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <h1 class="display-5 fw-bold text-primary mb-3">Bienvenido a SIGEBI</h1>
+            <p class="lead text-secondary mb-4">
+                Administra tu biblioteca con búsquedas rápidas de libros, registro de préstamos y navegación sencilla.
+                Explora el catálogo, revisa disponibilidad y gestiona el flujo completo de préstamos en pocos pasos.
+            </p>
+            <div class="d-flex gap-2 flex-wrap">
+                <a class="btn btn-primary btn-lg" asp-controller="Libro" asp-action="Index">Buscar libros</a>
+                <a class="btn btn-outline-primary btn-lg" asp-controller="Prestamo" asp-action="Index">Ver préstamos</a>
+            </div>
+        </div>
+        <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">
+            <div class="hero-card p-4 rounded-4 bg-primary text-white shadow">
+                <h2 class="h4 fw-semibold mb-3">Estado en línea</h2>
+                <ul class="list-unstyled mb-0 small">
+                    <li class="mb-2">✔️ Catálogo disponible y navegable.</li>
+                    <li class="mb-2">✔️ Préstamos operativos y validados.</li>
+                    <li class="mb-2">✔️ Interfaz unificada con Bootstrap 5.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Módulo de Libros</h5>
+                <p class="card-text text-secondary">Consulta, registra y edita títulos con disponibilidad y ubicación actualizadas.</p>
+                <a asp-controller="Libro" asp-action="Index" class="btn btn-outline-primary">Abrir catálogo</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Módulo de Préstamos</h5>
+                <p class="card-text text-secondary">Inicia nuevos préstamos, revisa el estado y consulta historial por usuario.</p>
+                <a asp-controller="Prestamo" asp-action="Index" class="btn btn-outline-primary">Gestionar préstamos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Navegación guiada</h5>
+                <p class="card-text text-secondary">Plantillas unificadas, validaciones visibles y menús siempre accesibles.</p>
+                <a asp-controller="Home" asp-action="Privacy" class="btn btn-outline-secondary">Ver políticas</a>
+            </div>
+        </div>
+    </div>
+</section>

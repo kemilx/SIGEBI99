@@ -1,5 +1,5 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,29 +9,27 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <header class="mb-4">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
             <div class="container">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">SIGEBI</a>
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">SIGEBI</a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                        aria-controls="navbarContent" aria-expanded="false" aria-label="Menú">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarContent">
+                    @{ var currentPath = Context.Request.Path.Value ?? string.Empty; }
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link @(currentPath == "/" ? "active" : string.Empty)" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
-
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Libro" asp-action="Index">Libros</a>
+                            <a class="nav-link @(currentPath.StartsWith("/Libro", StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty)" asp-controller="Libro" asp-action="Index">Libros</a>
                         </li>
-
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Prestamo" asp-action="Index">Préstamos</a>
+                            <a class="nav-link @(currentPath.StartsWith("/Prestamo", StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty)" asp-controller="Prestamo" asp-action="Index">Préstamos</a>
                         </li>
                     </ul>
 
@@ -42,14 +40,15 @@
     </header>
 
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-5">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-4">
-        <div class="container">
-            &copy; 2025 - SIGEBI
+    <footer class="border-top footer text-muted mt-auto py-3 bg-light">
+        <div class="container d-flex justify-content-between align-items-center">
+            <span>&copy; @DateTime.Now.Year - SIGEBI</span>
+            <span class="text-secondary small">Sistema Integrado de Gestión Bibliotecaria</span>
         </div>
     </footer>
 

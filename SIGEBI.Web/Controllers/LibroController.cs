@@ -17,13 +17,13 @@ public class LibroController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(string? titulo, string? autor, CancellationToken ct)
     {
-        // Si no hay criterios de b˙squeda, primera carga => vista vacÌa
+        // Si no hay criterios de b√∫squeda, primera carga => vista vac√≠a
         if (string.IsNullOrWhiteSpace(titulo) && string.IsNullOrWhiteSpace(autor))
         {
             return View(new List<LibroViewModel>());
         }
 
-        // Si hay tÌtulo o autor, entonces sÌ buscamos
+        // Si hay t√≠tulo o autor, entonces s√≠ buscamos
         var libros = await _libroService.BuscarAsync(titulo, autor, ct);
         var model = libros.Select(MapToViewModel).ToList();
         return View(model);
@@ -61,6 +61,11 @@ public class LibroController : Controller
     public async Task<IActionResult> Edit(Guid id, CancellationToken ct)
     {
         var libro = await _libroService.ObtenerPorIdAsync(id, ct);
+        if (libro is null)
+        {
+            return NotFound();
+        }
+
         return View(MapToViewModel(libro));
     }
 
@@ -84,6 +89,11 @@ public class LibroController : Controller
     public async Task<IActionResult> Details(Guid id, CancellationToken ct)
     {
         var libro = await _libroService.ObtenerPorIdAsync(id, ct);
+        if (libro is null)
+        {
+            return NotFound();
+        }
+
         return View(MapToViewModel(libro));
     }
 
