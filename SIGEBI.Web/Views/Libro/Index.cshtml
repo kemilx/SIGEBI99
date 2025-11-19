@@ -1,0 +1,52 @@
+@model IEnumerable<SIGEBI.Web.Models.LibroViewModel>
+
+@{
+    ViewData["Title"] = "Libros";
+}
+
+<h1>Libros</h1>
+
+<form method="get" action="/Libro/Index">
+    <input type="text" name="titulo" placeholder="Buscar por título" />
+    <input type="text" name="autor" placeholder="Buscar por autor" />
+    <button type="submit">Buscar</button>
+</form>
+
+<p>
+    <!-- Link directo a la acción Create -->
+    <a href="/Libro/Create">Crear nuevo</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>ISBN</th>
+            <th>Ejemplares totales</th>
+            <th>Ejemplares disponibles</th>
+            <th>Ubicación</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Titulo</td>
+                <td>@item.Autor</td>
+                <td>@item.Isbn</td>
+                <td>@item.EjemplaresTotales</td>
+                <td>@item.EjemplaresDisponibles</td>
+                <td>@item.Ubicacion</td>
+                <td>@item.Estado</td>
+                <td>
+                    <!-- Links explícitos para Edit y Details -->
+                    <a href="@Url.Action("Edit", "Libro", new { id = item.Id })">Edit</a> |
+                    <a href="@Url.Action("Details", "Libro", new { id = item.Id })">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

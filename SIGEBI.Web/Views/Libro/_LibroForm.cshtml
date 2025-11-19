@@ -1,0 +1,39 @@
+@model SIGEBI.Web.Models.LibroViewModel
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Titulo" class="form-label"></label>
+        <input asp-for="Titulo" class="form-control" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Autor" class="form-label"></label>
+        <input asp-for="Autor" class="form-control" />
+        <span asp-validation-for="Autor" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Isbn" class="form-label"></label>
+        <input asp-for="Isbn" class="form-control" />
+        <span asp-validation-for="Isbn" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="EjemplaresTotales" class="form-label"></label>
+        <input asp-for="EjemplaresTotales" class="form-control" type="number" />
+        <span asp-validation-for="EjemplaresTotales" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Ubicacion" class="form-label"></label>
+        <input asp-for="Ubicacion" class="form-control" />
+        <span asp-validation-for="Ubicacion" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="FechaPublicacionUtc" class="form-label"></label>
+        <input asp-for="FechaPublicacionUtc" class="form-control" type="date" />
+        <span asp-validation-for="FechaPublicacionUtc" class="text-danger"></span>
+    </div>
+</div>

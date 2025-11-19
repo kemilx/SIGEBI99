@@ -1,0 +1,39 @@
+@model SIGEBI.Web.Models.LibroViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Libro</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Título</dt>
+        <dd class="col-sm-10">@Model.Titulo</dd>
+
+        <dt class="col-sm-2">Autor</dt>
+        <dd class="col-sm-10">@Model.Autor</dd>
+
+        <dt class="col-sm-2">ISBN</dt>
+        <dd class="col-sm-10">@Model.Isbn</dd>
+
+        <dt class="col-sm-2">Ejemplares totales</dt>
+        <dd class="col-sm-10">@Model.EjemplaresTotales</dd>
+
+        <dt class="col-sm-2">Ejemplares disponibles</dt>
+        <dd class="col-sm-10">@Model.EjemplaresDisponibles</dd>
+
+        <dt class="col-sm-2">Ubicación</dt>
+        <dd class="col-sm-10">@Model.Ubicacion</dd>
+
+        <dt class="col-sm-2">Estado</dt>
+        <dd class="col-sm-10">@Model.Estado</dd>
+    </dl>
+</div>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</p>

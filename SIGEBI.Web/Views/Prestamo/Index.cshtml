@@ -1,0 +1,63 @@
+@model IEnumerable<SIGEBI.Web.Models.PrestamoViewModel>
+
+@{
+    ViewData["Title"] = "Préstamos";
+}
+
+<h1>Préstamos por usuario</h1>
+
+<form method="get" action="/Prestamo/Index" class="mb-3">
+    <label for="usuarioId">Usuario (Guid)</label>
+    <input type="text"
+           id="usuarioId"
+           name="usuarioId"
+           value="@ViewBag.UsuarioId"
+           class="form-control"
+           style="max-width:400px" />
+    <small class="text-muted">Proporcione el identificador del usuario.</small>
+    <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+</form>
+
+<p>
+    <a class="btn btn-success" href="/Prestamo/Create">Nuevo préstamo</a>
+</p>
+
+@if (Model == null || !Model.Any())
+{
+    <p>No hay préstamos para el usuario indicado.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Usuario</th>
+                <th>Libro</th>
+                <th>Estado</th>
+                <th>Fecha inicio</th>
+                <th>Fecha compromiso</th>
+                <th>Observaciones</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.UsuarioId</td>
+                    <td>@item.LibroId</td>
+                    <td>@item.Estado</td>
+                    <td>@item.FechaInicioUtc</td>
+                    <td>@item.FechaFinUtc</td>
+                    <td>@item.Observaciones</td>
+                    <td>
+                        <a class="btn btn-sm btn-info"
+                           href="@Url.Action("Details", "Prestamo", new { id = item.Id })">
+                            Details
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
