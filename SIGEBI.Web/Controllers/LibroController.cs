@@ -1,17 +1,17 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using SIGEBI.Application.Interfaces;
-using SIGEBI.Domain.Entities;
+using SIGEBI.Web.Api;
 using SIGEBI.Web.Models;
 
 namespace SIGEBI.Web.Controllers;
 
 public class LibroController : Controller
 {
-    private readonly ILibroService _libroService;
+    private readonly ILibroApiClient _libroApiClient;
 
-    public LibroController(ILibroService libroService)
+    public LibroController(ILibroApiClient libroApiClient)
     {
-        _libroService = libroService;
+        _libroApiClient = libroApiClient;
     }
 
     [HttpGet]
@@ -24,9 +24,17 @@ public class LibroController : Controller
         }
 
         // Si hay título o autor, entonces sí buscamos
-        var libros = await _libroService.BuscarAsync(titulo, autor, ct);
-        var model = libros.Select(MapToViewModel).ToList();
-        return View(model);
+        try
+        {
+            var libros = await _libroApiClient.BuscarAsync(titulo, autor, ct);
+            var model = libros.Select(MapToViewModel).ToList();
+            return View(model);
+        }
+        catch (ApiException ex)
+        {
+            TempData["ErrorMessage"] = $"No se pudo consultar los libros: {ex.Message}";
+            return View(new List<LibroViewModel>());
+        }
     }
 
     [HttpGet]
@@ -44,29 +52,51 @@ public class LibroController : Controller
             return View(model);
         }
 
-        var libro = await _libroService.CrearAsync(
-            model.Titulo,
-            model.Autor,
-            model.EjemplaresTotales,
-            model.Isbn,
-            model.Ubicacion,
-            model.FechaPublicacionUtc,
-            ct);
+        try
+        {
+            var libro = await _libroApiClient.CrearAsync(
+                new CrearLibroRequest(
+                    model.Titulo,
+                    model.Autor,
+                    model.EjemplaresTotales,
+                    model.Isbn,
+                    model.Ubicacion,
+                    model.FechaPublicacionUtc),
+                ct);
 
-        TempData["SuccessMessage"] = "Libro creado correctamente.";
-        return RedirectToAction(nameof(Details), new { id = libro.Id });
+            TempData["SuccessMessage"] = "Libro creado correctamente.";
+            return RedirectToAction(nameof(Details), new { id = libro.Id });
+        }
+        catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
+        catch (ApiException ex)
+        {
+            TempData["ErrorMessage"] = $"No se pudo crear el libro: {ex.Message}";
+            return View(model);
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> Edit(Guid id, CancellationToken ct)
     {
-        var libro = await _libroService.ObtenerPorIdAsync(id, ct);
-        if (libro is null)
+        try
         {
-            return NotFound();
-        }
+            var libro = await _libroApiClient.ObtenerPorIdAsync(id, ct);
+            if (libro is null)
+            {
+                return NotFound();
+            }
 
-        return View(MapToViewModel(libro));
+            return View(MapToViewModel(libro));
+        }
+        catch (ApiException ex)
+        {
+            TempData["ErrorMessage"] = $"No se pudo cargar el libro: {ex.Message}";
+            return RedirectToAction(nameof(Index));
+        }
     }
 
     [HttpPost]
@@ -78,26 +108,55 @@ public class LibroController : Controller
             return View(model);
         }
 
-        await _libroService.ActualizarAsync(id, model.Titulo, model.Autor, model.Isbn, model.FechaPublicacionUtc, ct);
-        await _libroService.ActualizarUbicacionAsync(id, model.Ubicacion, ct);
+        try
+        {
+            await _libroApiClient.ActualizarAsync(
+                id,
+                new ActualizarLibroRequest(model.Titulo, model.Autor, model.Isbn, model.FechaPublicacionUtc),
+                ct);
 
-        TempData["SuccessMessage"] = "Libro actualizado correctamente.";
-        return RedirectToAction(nameof(Details), new { id });
+            await _libroApiClient.ActualizarUbicacionAsync(id, new ActualizarUbicacionRequest(model.Ubicacion), ct);
+
+            TempData["SuccessMessage"] = "Libro actualizado correctamente.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
+        catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return NotFound();
+        }
+        catch (ApiException ex)
+        {
+            TempData["ErrorMessage"] = $"No se pudo actualizar el libro: {ex.Message}";
+            return View(model);
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> Details(Guid id, CancellationToken ct)
     {
-        var libro = await _libroService.ObtenerPorIdAsync(id, ct);
-        if (libro is null)
+        try
         {
-            return NotFound();
-        }
+            var libro = await _libroApiClient.ObtenerPorIdAsync(id, ct);
+            if (libro is null)
+            {
+                return NotFound();
+            }
 
-        return View(MapToViewModel(libro));
+            return View(MapToViewModel(libro));
+        }
+        catch (ApiException ex)
+        {
+            TempData["ErrorMessage"] = $"No se pudo obtener la información del libro: {ex.Message}";
+            return RedirectToAction(nameof(Index));
+        }
     }
 
-    private static LibroViewModel MapToViewModel(Libro libro) => new()
+    private static LibroViewModel MapToViewModel(LibroDto libro) => new()
     {
         Id = libro.Id,
         Titulo = libro.Titulo,

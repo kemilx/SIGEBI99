@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SIGEBI.IOC;
+using Microsoft.Extensions.Options;
+using SIGEBI.Web.Api;
 using SIGEBI.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +23,29 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddSIGEBIDependencies(builder.Configuration);
+builder.Services.Configure<ApiOptions>(builder.Configuration.GetSection("Api"));
+
+builder.Services.AddHttpClient<ILibroApiClient, LibroApiClient>((sp, client) =>
+{
+    var options = sp.GetRequiredService<IOptions<ApiOptions>>().Value;
+    if (string.IsNullOrWhiteSpace(options.BaseUrl))
+    {
+        throw new InvalidOperationException("La configuración de Api:BaseUrl es obligatoria para el cliente Http.");
+    }
+
+    client.BaseAddress = new Uri(options.BaseUrl);
+}).SetHandlerLifetime(TimeSpan.FromMinutes(5));
+
+builder.Services.AddHttpClient<IPrestamoApiClient, PrestamoApiClient>((sp, client) =>
+{
+    var options = sp.GetRequiredService<IOptions<ApiOptions>>().Value;
+    if (string.IsNullOrWhiteSpace(options.BaseUrl))
+    {
+        throw new InvalidOperationException("La configuración de Api:BaseUrl es obligatoria para el cliente Http.");
+    }
+
+    client.BaseAddress = new Uri(options.BaseUrl);
+}).SetHandlerLifetime(TimeSpan.FromMinutes(5));
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

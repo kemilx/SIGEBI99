@@ -1,18 +1,17 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using SIGEBI.Application.Interfaces;
-using SIGEBI.Application.Prestamos.Commands;
-using SIGEBI.Domain.Entities;
+using SIGEBI.Web.Api;
 using SIGEBI.Web.Models;
 
 namespace SIGEBI.Web.Controllers
 {
     public class PrestamoController : Controller
     {
-        private readonly IPrestamoService _prestamoService;
+        private readonly IPrestamoApiClient _prestamoApiClient;
 
-        public PrestamoController(IPrestamoService prestamoService)
+        public PrestamoController(IPrestamoApiClient prestamoApiClient)
         {
-            _prestamoService = prestamoService;
+            _prestamoApiClient = prestamoApiClient;
         }
 
         [HttpGet]
@@ -30,23 +29,49 @@ namespace SIGEBI.Web.Controllers
                 return View(model);
             }
 
-            var prestamo = await _prestamoService.CrearAsync(
-                new CrearPrestamoCommand(
-                    model.LibroId,
-                    model.UsuarioId,
-                    model.FechaInicioUtc,
-                    model.FechaFinUtc),
-                ct);
+            try
+            {
+                var prestamo = await _prestamoApiClient.CrearAsync(
+                    new CrearPrestamoRequest(
+                        model.LibroId,
+                        model.UsuarioId,
+                        model.FechaInicioUtc,
+                        model.FechaFinUtc),
+                    ct);
 
-            TempData["SuccessMessage"] = "Préstamo registrado correctamente.";
-            return RedirectToAction(nameof(Details), new { id = prestamo.Id });
+                TempData["SuccessMessage"] = "Préstamo registrado correctamente.";
+                return RedirectToAction(nameof(Details), new { id = prestamo.Id });
+            }
+            catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (ApiException ex)
+            {
+                TempData["ErrorMessage"] = $"No se pudo crear el préstamo: {ex.Message}";
+                return View(model);
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(Guid id, CancellationToken ct)
         {
-            var prestamo = await _prestamoService.ObtenerPorIdAsync(id, ct);
-            return View(MapToViewModel(prestamo));
+            try
+            {
+                var prestamo = await _prestamoApiClient.ObtenerPorIdAsync(id, ct);
+                if (prestamo is null)
+                {
+                    return NotFound();
+                }
+
+                return View(MapToViewModel(prestamo));
+            }
+            catch (ApiException ex)
+            {
+                TempData["ErrorMessage"] = $"No se pudo obtener el préstamo: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpGet]
@@ -59,20 +84,29 @@ namespace SIGEBI.Web.Controllers
                 return View(new List<PrestamoViewModel>());
             }
 
-            var prestamos = await _prestamoService.ObtenerPorUsuarioAsync(usuarioId.Value, ct);
-            var model = prestamos.Select(MapToViewModel).ToList();
-            ViewBag.UsuarioId = usuarioId;
-            return View(model);
+            try
+            {
+                var prestamos = await _prestamoApiClient.ObtenerPorUsuarioAsync(usuarioId.Value, ct);
+                var model = prestamos.Select(MapToViewModel).ToList();
+                ViewBag.UsuarioId = usuarioId;
+                return View(model);
+            }
+            catch (ApiException ex)
+            {
+                TempData["ErrorMessage"] = $"No se pudieron consultar los préstamos: {ex.Message}";
+                ViewBag.UsuarioId = usuarioId;
+                return View(new List<PrestamoViewModel>());
+            }
         }
 
-        private static PrestamoViewModel MapToViewModel(Prestamo prestamo) => new()
+        private static PrestamoViewModel MapToViewModel(PrestamoDto prestamo) => new()
         {
             Id = prestamo.Id,
             LibroId = prestamo.LibroId,
             UsuarioId = prestamo.UsuarioId,
             Estado = prestamo.Estado,
-            FechaInicioUtc = prestamo.Periodo.FechaInicioUtc,
-            FechaFinUtc = prestamo.Periodo.FechaFinCompromisoUtc,
+            FechaInicioUtc = prestamo.FechaInicioUtc,
+            FechaFinUtc = prestamo.FechaFinCompromisoUtc,
             Observaciones = prestamo.Observaciones
         };
     }
