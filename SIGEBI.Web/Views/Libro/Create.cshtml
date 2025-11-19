@@ -1,56 +1,28 @@
 @model SIGEBI.Web.Models.LibroViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nuevo libro";
 }
 
-<h1>Create</h1>
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Registrar libro</h3>
+    </div>
+    <div class="card-body">
+        <p class="text-secondary">Completa la información para agregar un nuevo título al catálogo.</p>
 
-<h4>Libro</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post">
-            <div class="form-group">
-                <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
-                <span asp-validation-for="Titulo" class="text-danger"></span>
-            </div>
+        <form asp-action="Create" method="post" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <partial name="_LibroForm" model="Model" />
 
-            <div class="form-group">
-                <label asp-for="Autor" class="control-label"></label>
-                <input asp-for="Autor" class="form-control" />
-                <span asp-validation-for="Autor" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Isbn" class="control-label"></label>
-                <input asp-for="Isbn" class="form-control" />
-                <span asp-validation-for="Isbn" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="EjemplaresTotales" class="control-label"></label>
-                <input asp-for="EjemplaresTotales" class="form-control" />
-                <span asp-validation-for="EjemplaresTotales" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Ubicacion" class="control-label"></label>
-                <input asp-for="Ubicacion" class="form-control" />
-                <span asp-validation-for="Ubicacion" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="FechaPublicacionUtc" class="control-label"></label>
-                <input asp-for="FechaPublicacionUtc" class="form-control" />
-                <span asp-validation-for="FechaPublicacionUtc" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-2">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

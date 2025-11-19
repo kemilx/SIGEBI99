@@ -1,39 +1,46 @@
 @model SIGEBI.Web.Models.LibroViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalle de libro";
 }
 
-<h1>Details</h1>
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">Detalle de libro</h3>
+        <span class="small text-white-50">ID: @Model.Id</span>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Título</dt>
+            <dd class="col-sm-9">@Model.Titulo</dd>
 
-<div>
-    <h4>Libro</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Título</dt>
-        <dd class="col-sm-10">@Model.Titulo</dd>
+            <dt class="col-sm-3">Autor</dt>
+            <dd class="col-sm-9">@Model.Autor</dd>
 
-        <dt class="col-sm-2">Autor</dt>
-        <dd class="col-sm-10">@Model.Autor</dd>
+            <dt class="col-sm-3">ISBN</dt>
+            <dd class="col-sm-9">@Model.Isbn</dd>
 
-        <dt class="col-sm-2">ISBN</dt>
-        <dd class="col-sm-10">@Model.Isbn</dd>
+            <dt class="col-sm-3">Ubicación</dt>
+            <dd class="col-sm-9">@Model.Ubicacion</dd>
 
-        <dt class="col-sm-2">Ejemplares totales</dt>
-        <dd class="col-sm-10">@Model.EjemplaresTotales</dd>
+            <dt class="col-sm-3">Fecha de publicación</dt>
+            <dd class="col-sm-9">@Model.FechaPublicacionUtc?.ToString("yyyy-MM-dd")</dd>
 
-        <dt class="col-sm-2">Ejemplares disponibles</dt>
-        <dd class="col-sm-10">@Model.EjemplaresDisponibles</dd>
+            <dt class="col-sm-3">Ejemplares</dt>
+            <dd class="col-sm-9">
+                <span class="badge bg-primary">Totales: @Model.EjemplaresTotales</span>
+                <span class="badge bg-success ms-2">Disponibles: @Model.EjemplaresDisponibles</span>
+            </dd>
 
-        <dt class="col-sm-2">Ubicación</dt>
-        <dd class="col-sm-10">@Model.Ubicacion</dd>
+            <dt class="col-sm-3">Estado</dt>
+            <dd class="col-sm-9">
+                <span class="badge bg-dark">@Model.Estado</span>
+            </dd>
+        </dl>
 
-        <dt class="col-sm-2">Estado</dt>
-        <dd class="col-sm-10">@Model.Estado</dd>
-    </dl>
+        <div class="d-flex gap-2 mt-4">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+        </div>
+    </div>
 </div>
-
-<p>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</p>
