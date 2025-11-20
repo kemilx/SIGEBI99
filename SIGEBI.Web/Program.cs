@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SIGEBI.IOC;
 using SIGEBI.Web.Data;
+using SIGEBI.Web.ApiClients;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,13 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 
 builder.Services.AddSIGEBIDependencies(builder.Configuration);
 builder.Services.AddControllersWithViews();
+
+
+builder.Services.AddHttpClient<ILibroApiClient, LibroApiClient>(client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+    client.BaseAddress = new Uri(baseUrl!);
+});
 
 var app = builder.Build();
 
